@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Lotus 🪷{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="announcement-bar">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4><i class="fas fa-bullhorn mr-2"></i> Announcements</h4>
+            {% if is_admin %}
+            <button class="btn btn-sm btn-light" data-toggle="modal" data-target="#announcementModal">
+                <i class="fas fa-plus"></i> New Announcement
+            </button>
+            {% endif %}
+        </div>
+        <hr>
+        {% if announcements %}
+            {% for announcement in announcements %}
+            <div class="mb-3 p-3" style="background-color: rgba(0,0,0,0.3); border-radius: 5px;">
+                <div class="d-flex justify-content-between">
+                    <h5>{{ announcement.title }}</h5>
+                    {% if is_admin %}
+                    <div>
+                        <button class="btn btn-sm btn-warning" onclick="editAnnouncement({{ announcement.id }})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteAnnouncement({{ announcement.id }})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+                <p class="mb-1">{{ announcement.content }}</p>
+                <small class="text-muted">By {{ announcement.author }} - {{ announcement.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted">No announcements yet.</p>
+        {% endif %}
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-user-clock mr-2"></i> Inactive Members</h5>
+                </div>
+                <div class="card-body">
+                    {% if inactive_members %}
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover" id="inactiveTable">
+                            <thead>
+                                <tr>
+                                    <th>Nation Name</th>
+                                    <th>Days Inactive</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for member in inactive_members %}
+                                <tr>
+                                    <td>{{ member.name }}</td>
+                                    <td><span class="badge badge-danger">{{ member.days }} days</span></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">All members are active! 🎉</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-fighter-jet mr-2"></i> Active Wars</h5>
+                </div>
+                <div class="card-body">
+                    {% if alliance_wars %}
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover" id="warsTable">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Attacker</th>
+                                    <th>Defender</th>
+                                    <th>Turns Left</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for war in alliance_wars %}
+                                <tr>
+                                    <td>{{ war.war_type }}</td>
+                                    <td>{{ war.attacker.nation_name if war.attacker else 'Unknown' }}</td>
+                                    <td>{{ war.defender.nation_name if war.defender else 'Unknown' }}</td>
+                                    <td>{{ war.turns_left }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No active wars. Peace time! ☮️</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if is_admin %}
+<div class="modal fade" id="announcementModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="background-color: #2a2a2a;">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Announcement</h5>
+                <button type="button" class="close text-white" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="announcementForm">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" class="form-control" id="announcementTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Content</label>
+                        <textarea class="form-control" id="announcementContent" rows="4" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="submitAnnouncement()">Post</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('#inactiveTable').DataTable({
+        "pageLength": 10,
+        "order": [[1, "desc"]]
+    });
+    
+    $('#warsTable').DataTable({
+        "pageLength": 10
+    });
+});
+
+{% if is_admin %}
+function submitAnnouncement() {
+    const title = $('#announcementTitle').val();
+    const content = $('#announcementContent').val();
+    
+    $.ajax({
+        url: '/api/announcement',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ title, content }),
+        success: function(response) {
+            alert('Announcement posted successfully!');
+            location.reload();
+        },
+        error: function() {
+            alert('Failed to post announcement.');
+        }
+    });
+}
+
+function deleteAnnouncement(id) {
+    if (!confirm('Are you sure you want to delete this announcement?')) return;
+    
+    $.ajax({
+        url: '/api/announcement/' + id,
+        method: 'DELETE',
+        success: function() {
+            alert('Announcement deleted!');
+            location.reload();
+        },
+        error: function() {
+            alert('Failed to delete announcement.');
+        }
+    });
+}
+
+function editAnnouncement(id) {
+    alert('Edit functionality - to be implemented');
+}
+{% endif %}
+</script>
+{% endblock %}

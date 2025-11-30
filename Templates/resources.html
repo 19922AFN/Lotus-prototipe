@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+
+{% block title %}Resources - Lotus 🪷{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4><i class="fas fa-chart-line mr-2"></i> Resource Prices</h4>
+                    <button class="btn btn-success" onclick="exportPrices()">
+                        <i class="fas fa-download mr-2"></i> Export
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover" id="pricesTable">
+                            <thead>
+                                <tr>
+                                    <th>Resource</th>
+                                    <th>Price (USD)</th>
+                                    <th>Trend</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if prices %}
+                                <tr>
+                                    <td><i class="fas fa-apple-alt mr-2"></i> Food</td>
+                                    <td>${{ "%.2f"|format(prices.food) }}</td>
+                                    <td><span class="badge badge-info">-</span></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-gem mr-2"></i> Coal</td>
+                                    <td>${{ "%.2f"|format(prices.coal) }}</td>
+                                    <td><span class="badge badge-info">-</span></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-oil-can mr-2"></i> Oil</td>
+                                    <td>${{ "%.2f"|format(prices.oil) }}</td>
+                                    <td><span class="badge badge-info">-</span></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-radiation mr-2"></i> Uranium</td>
+                                    <td>${{ "%.2f"|format(prices.uranium) }}</td>
+                                    <td><span class="badge badge-info">-</span></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-cube mr-2"></i> Lead</td>
+                                    <td>${{ "%.2f"|format(prices.lead) }}</td>
+                                    <td><span class="badge badge-info">-</span></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-cube mr-2"></i> Iron</td>
+                                    <td>${{ "%.2f"|format(prices.iron) }}</td>
+                                    <td><span class="badge badge-info">-</span></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-cube mr-2"></i> Bauxite</td>
+                                    <td>${{ "%.2f"|format(prices.bauxite) }}</td>
+                                    <td><span class="badge badge-info">-</span></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-gas-pump mr-2"></i> Gasoline</td>
+                                    <td>${{ "%.2f"|format(prices.gasoline) }}</td>
+                                    <td><span class="badge badge-info">-</span></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-bomb mr-2"></i> Munitions</td>
+                                    <td>${{ "%.2f"|format(prices.munitions) }}</td>
+                                    <td><span class="badge badge-info">-</span></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-industry mr-2"></i> Steel</td>
+                                    <td>${{ "%.2f"|format(prices.steel) }}</td>
+                                    <td><span class="badge badge-info">-</span></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-cube mr-2"></i> Aluminum</td>
+                                    <td>${{ "%.2f"|format(prices.aluminum) }}</td>
+                                    <td><span class="badge badge-info">-</span></td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">
+                                        Unable to fetch prices. Please try again later.
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <small class="text-muted">Last updated: {{ now.strftime('%Y-%m-%d %H:%M') if now else 'Unknown' }}</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-paper-plane mr-2"></i> Send Resources</h5>
+                </div>
+                <div class="card-body">
+                    <form id="sendResourcesForm">
+                        <div class="form-group">
+                            <label>Recipient Nation ID</label>
+                            <input type="number" class="form-control" id="recipientId" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Money</label>
+                            <input type="number" class="form-control" id="money" value="0" min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Food</label>
+                            <input type="number" class="form-control" id="food" value="0" min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Coal</label>
+                            <input type="number" class="form-control" id="coal" value="0" min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Oil</label>
+                            <input type="number" class="form-control" id="oil" value="0" min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Uranium</label>
+                            <input type="number" class="form-control" id="uranium" value="0" min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Lead</label>
+                            <input type="number" class="form-control" id="lead" value="0" min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Iron</label>
+                            <input type="number" class="form-control" id="iron" value="0" min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Bauxite</label>
+                            <input type="number" class="form-control" id="bauxite" value="0" min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Gasoline</label>
+                            <input type="number" class="form-control" id="gasoline" value="0" min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Munitions</label>
+                            <input type="number" class="form-control" id="munitions" value="0" min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Steel</label>
+                            <input type="number" class="form-control" id="steel" value="0" min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Aluminum</label>
+                            <input type="number" class="form-control" id="aluminum" value="0" min="0">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-paper-plane mr-2"></i> Send Resources
+                        </button>
+                    </form>
+                    
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        <small>You need to set your API key in your profile to send resources.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('#pricesTable').DataTable({
+        "pageLength": 25,
+        "searching": true,
+        "paging": false
+    });
+});
+
+$('#sendResourcesForm').submit(function(e) {
+    e.preventDefault();
+    
+    const data = {
+        recipient_id: $('#recipientId').val(),
+        money: $('#money').val(),
+        food: $('#food').val(),
+        coal: $('#coal').val(),
+        oil: $('#oil').val(),
+        uranium: $('#uranium').val(),
+        lead: $('#lead').val(),
+        iron: $('#iron').val(),
+        bauxite: $('#bauxite').val(),
+        gasoline: $('#gasoline').val(),
+        munitions: $('#munitions').val(),
+        steel: $('#steel').val(),
+        aluminum: $('#aluminum').val()
+    };
+    
+    $.ajax({
+        url: '/api/send-resources',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function(response) {
+            alert('Resources sent successfully!');
+            $('#sendResourcesForm')[0].reset();
+        },
+        error: function(xhr) {
+            alert('Failed to send resources: ' + (xhr.responseJSON?.message || 'Unknown error'));
+        }
+    });
+});
+
+function exportPrices() {
+    window.location.href = '/api/export-prices';
+}
+</script>
+{% endblock %}

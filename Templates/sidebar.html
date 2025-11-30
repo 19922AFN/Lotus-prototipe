@@ -1,0 +1,39 @@
+<!-- User Profile Section -->
+<div class="user-profile text-center">
+    {% if user.nation_name %}
+    <h5>{{ user.nation_name }}</h5>
+    <small class="text-muted">{{ user.discord_username }}</small><br>
+    {% else %}
+    <h5>{{ user.discord_username }}</h5>
+    <small class="text-warning">Nation not linked</small><br>
+    {% endif %}
+    {% if user.rank %}
+    <span class="badge badge-primary mt-2">{{ user.rank }}</span>
+    {% else %}
+    <span class="badge badge-secondary mt-2">No Rank</span>
+    {% endif %}
+</div>
+
+<!-- Navigation Menu -->
+<ul class="nav flex-column">
+    <li class="nav-item">
+        <a class="nav-link {% if request.endpoint == 'profile' %}active{% endif %}" href="{{ url_for('profile') }}">
+            <i class="fas fa-user-cog mr-2"></i> Profile
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">
+            <i class="fas fa-home mr-2"></i> Dashboard
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.endpoint == 'nations' %}active{% endif %}" href="{{ url_for('nations') }}">
+            <i class="fas fa-flag mr-2"></i> Nations
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.endpoint == 'resources' %}active{% endif %}" href="{{ url_for('resources') }}">
+            <i class="fas fa-coins mr-2"></i> Resources
+        </a>
+    </li>
+</ul>

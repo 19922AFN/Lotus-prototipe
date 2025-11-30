@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - Lotus 🪷{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-user-cog mr-2"></i> User Profile</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Current Info -->
+                    <div class="mb-4">
+                        <h5>Discord Account</h5>
+                        <p><strong>Username:</strong> {{ user.discord_username }}</p>
+                        <p><strong>Discord ID:</strong> {{ user.discord_id }}</p>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Nation Link Status -->
+                    {% if user.nation_id %}
+                    <div class="alert alert-success">
+                        <h5><i class="fas fa-check-circle mr-2"></i> Nation Linked</h5>
+                        <p class="mb-0"><strong>Nation:</strong> {{ user.nation_name }}</p>
+                        <p class="mb-0"><strong>Nation ID:</strong> {{ user.nation_id }}</p>
+                        <p class="mb-0"><strong>Rank:</strong> {{ user.rank or 'Member' }}</p>
+                        <p class="mb-0"><strong>API Key:</strong> {{ '✓ Set' if user.get_api_key() else '✗ Not Set' }}</p>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Want to update your information? Fill out the form below to re-link your nation or update your API key.
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <h5><i class="fas fa-exclamation-triangle mr-2"></i> Nation Not Linked</h5>
+                        <p class="mb-0">Please link your Politics & War nation to access the application features.</p>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Link Nation Form -->
+                    <div class="card bg-dark">
+                        <div class="card-header">
+                            <h5>Link/Update P&W Nation</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ url_for('profile') }}">
+                                <div class="form-group">
+                                    <label for="nation_name">
+                                        <i class="fas fa-flag mr-2"></i> Nation Name
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="nation_name" 
+                                        name="nation_name" 
+                                        value="{{ user.nation_name or '' }}"
+                                        placeholder="Enter your exact nation name from P&W"
+                                        required
+                                    >
+                                    <small class="form-text text-muted">
+                                        Must match exactly with your nation name in Politics & War
+                                    </small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="api_key">
+                                        <i class="fas fa-key mr-2"></i> API Key (Optional)
+                                    </label>
+                                    <input 
+                                        type="password" 
+                                        class="form-control" 
+                                        id="api_key" 
+                                        name="api_key" 
+                                        placeholder="Enter your P&W API key"
+                                    >
+                                    <small class="form-text text-muted">
+                                        Required for sending resources. Your API key is encrypted and stored securely.
+                                        <a href="https://politicsandwar.com/account/" target="_blank" class="text-info">
+                                            Get your API key here <i class="fas fa-external-link-alt"></i>
+                                        </a>
+                                    </small>
+                                </div>
+                                
+                                <div class="alert alert-info">
+                                    <h6><i class="fas fa-shield-alt mr-2"></i> Security Notes:</h6>
+                                    <ul class="mb-0">
+                                        <li>Your nation must be a member of our alliance</li>
+                                        <li>API keys are encrypted before being stored</li>
+                                        <li>Your rank will be synced automatically from P&W</li>
+                                        <li>You can update your information anytime</li>
+                                    </ul>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary btn-block">
+                                    <i class="fas fa-link mr-2"></i> 
+                                    {% if user.nation_id %}Update Nation Link{% else %}Link Nation{% endif %}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- How to Get API Key -->
+                    <div class="card bg-dark mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-question-circle mr-2"></i> How to Get Your API Key</h5>
+                        </div>
+                        <div class="card-body">
+                            <ol>
+                                <li>Go to <a href="https://politicsandwar.com/account/" target="_blank" class="text-info">https://politicsandwar.com/account/</a></li>
+                                <li>Scroll down to the "API Key" section</li>
+                                <li>Copy your API key (create one if you don't have it)</li>
+                                <li>Paste it in the form above</li>
+                            </ol>
+                            <div class="alert alert-warning mb-0">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                <strong>Important:</strong> Never share your API key with anyone else. It gives access to your nation's actions.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-footer text-center">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

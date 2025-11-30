@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Lotus 🪷{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center" style="min-height: 70vh; align-items: center;">
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h3 class="mb-4">Welcome to Lotus! 🪷</h3>
+                    <p>A RoseCP-like tools! </p>
+                    <hr>
+                    <p class="text-muted">Please login to continue.</p>
+                    <a class="btn btn-block btn-primary" href="{{ url_for('login') }}">
+                        <i class="fab fa-discord mr-2"></i> Login with Discord
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
