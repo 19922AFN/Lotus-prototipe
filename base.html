@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Lotus 🪷{% endblock %}</title>
+    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.3.2/css/fixedColumns.bootstrap4.min.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        
+        td, td * {
+            vertical-align: middle !important;
+            white-space: nowrap !important;
+        }
+        
+        table.DTFC_Cloned tr {
+            background-color: #303030;
+        }
+        
+        .tooltip-inner {
+            max-width: 50vh !important;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #303030;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #444444;
+        }
+        
+        table {
+            width: 100% !important;
+        }
+        
+        .navbar {
+            background-color: #3A0000 !important;
+        }
+        
+        .navbar-brand {
+            color: #ffffff !important;
+            font-weight: bold;
+        }
+        
+        .card {
+            background-color: #2a2a2a;
+            border: 1px solid #444444;
+            color: #ffffff;
+        }
+        
+        .card-header {
+            background-color: #3A0000;
+            border-bottom: 1px solid #444444;
+        }
+        
+        .card-footer {
+            background-color: #1f1f1f;
+            border-top: 1px solid #444444;
+        }
+        
+        .sidebar {
+            background-color: #2a2a2a;
+            min-height: calc(100vh - 56px);
+            border-right: 1px solid #444444;
+        }
+        
+        .sidebar .nav-link {
+            color: #cccccc;
+            padding: 10px 20px;
+        }
+        
+        .sidebar .nav-link:hover {
+            background-color: #3A0000;
+            color: #ffffff;
+        }
+        
+        .sidebar .nav-link.active {
+            background-color: #3A0000;
+            color: #ffffff;
+        }
+        
+        .btn-primary {
+            background-color: #3A0000;
+            border-color: #3A0000;
+        }
+        
+        .btn-primary:hover {
+            background-color: #520000;
+            border-color: #520000;
+        }
+        
+        .table {
+            color: #ffffff;
+        }
+        
+        .table-dark {
+            background-color: #2a2a2a;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: #3a3a3a;
+        }
+        
+        .user-profile {
+            padding: 20px;
+            border-bottom: 1px solid #444444;
+        }
+        
+        .user-profile img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+        }
+        
+        .announcement-bar {
+            background-color: #3A0000;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="/">Lotus 🪷</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                {% if session.user_id %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="container-fluid">
+        <div class="row">
+            {% if session.user_id %}
+            <div class="col-md-2 sidebar p-0">
+                {% include 'components/sidebar.html' %}
+            </div>
+            {% endif %}
+            
+            <div class="col-md-{{ '10' if session.user_id else '12' }}">
+                <div class="my-3">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="close" data-dismiss="alert">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="text-center py-3 mt-5" style="background-color: #1f1f1f;">
+        &copy; Samurai, All rights reserved.
+    </footer>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedcolumns/3.3.2/js/dataTables.fixedColumns.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            $('[data-toggle="tooltip"]').tooltip();
+            $('[data-toggle="popover"]').popover();
+            
+            $('*').on('shown.bs.tab', function () {
+                $($.fn.dataTable.tables(true)).DataTable().columns.adjust();
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
